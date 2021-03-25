@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "app"
+version = "0.1.0"
+description = ""
+authors = ["Медет <aselmysister@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+fastapi = "^0.63.0"
+pydantic = {extras = ["email"], version = "^1.8.1"}
+SQLAlchemy = "^1.4.2"
+utc = "^0.0.3"
+pytz = "^2021.1"
+alembic = "^1.5.7"
+psycopg2 = "^2.8.6"
+passlib = "^1.7.4"
+PyJWT = "^2.0.1"
+uvicorn = "^0.13.4"
+asyncpg = "^0.22.0"
+python-multipart = "^0.0.5"
+ipython = "^7.21.0"
+uuid = "^1.30"
+aio-pika = "^6.8.0"
+phonenumbers = "^8.12.20"
+bcrypt = "^3.2.0"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

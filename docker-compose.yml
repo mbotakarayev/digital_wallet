@@ -1,0 +1,74 @@
+version: '3'
+
+services:
+  wallet:
+    build:
+      context: ./wallet
+      dockerfile: Dockerfile
+    container_name: wallet
+    links:
+      - postgres
+      - rabbit
+    depends_on:
+      - postgres
+      - rabbit
+    environment:
+      - POSTGRES_SERVER=postgres
+      - POSTGRES_PASSWORD=AQqL6GWCj6MCMpvB
+      - RABBITMQ_URL=amqp://guest:guest@rabbit//
+    ports:
+      - "8000:8000"
+
+  transaction:
+    build:
+      context: ./transaction
+      dockerfile: Dockerfile
+    links:
+      - postgres
+      - rabbit
+      - wallet
+    depends_on:
+      - rabbit
+      - postgres
+      - wallet
+    container_name: transaction
+    ports: []
+    environment:
+      - POSTGRES_SERVER=postgres
+      - POSTGRES_PASSWORD=AQqL6GWCj6MCMpvB
+      - RABBITMQ_URL=amqp://guest:guest@rabbit:5672//
+      - WALLET_SERVICE_BASE=http://wallet:8000/
+
+  postgres:
+    image: library/postgres:13-alpine
+    environment:
+      - POSTGRES_DB=digit_wallet
+      - POSTGRES_USER=digit_wallet
+      - POSTGRES_PASSWORD=AQqL6GWCj6MCMpvB
+    volumes:
+      - postgres_data:/var/lib/postgresql
+
+  rabbit:
+    image: library/rabbitmq:latest
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  portainer:
+    image: portainer/portainer
+    command: -H unix:///var/run/docker.sock
+    restart: always
+    ports:
+      - 9000:9000
+      - 8005:8000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+
+volumes:
+  postgres_data:
+    driver: local
+  portainer_data:
