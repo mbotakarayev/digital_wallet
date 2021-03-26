@@ -16,7 +16,7 @@ from app.db.session import SessionLocal
 from app.models.transactions import Transaction
 from app.models.wallets import Wallet
 
-# logger = logging.getLogger(__name__)
+logger = logging.getLogger()
 loop = asyncio.get_event_loop()
 
 
@@ -37,7 +37,7 @@ async def confirm_transaction(db: AsyncSession, obj: Transaction) -> Wallet:
 
 async def handle_consume(message: IncomingMessage) -> None:
     async with message.process():
-        print(f"{message.body = }")
+        logger.info(f"{message.body = }")
         data = schemas.TransactionInputSchemas.parse_raw(message.body)
         async with SessionLocal() as session:
             transaction = await commit_db(session, obj_callable=add_transaction, kwargs={
@@ -59,7 +59,6 @@ async def handle_consume(message: IncomingMessage) -> None:
 
 
 async def main():
-    logging.debug(f"---------{settings.RABBITMQ_URL.path = }")
     connection = await connect(settings.RABBITMQ_URL, loop=loop)
     channel = await connection.channel()
 
@@ -71,7 +70,7 @@ async def main():
 
 
 if __name__ == "__main__":
-    print("------------", settings.RABBITMQ_URL.path)
+    logging.info(f"---------{settings.RABBITMQ_URL.path = }")
     parameters = pika.ConnectionParameters(
         host=settings.RABBITMQ_URL.host,
         port=settings.RABBITMQ_URL.port,
@@ -84,16 +83,16 @@ if __name__ == "__main__":
         try:
             c = pika.BlockingConnection(parameters)
             if c.is_open:
-                print('OK')
                 c.close()
+                logger.info("Can connected")
                 break
-        except Exception as error:
-            print('No connection yet:', error.__class__.__name__)
+        except Exception as exc:
+            logger.warning(f"No connection yet")
             time.sleep(5)
 
-    print("start application")
+    logger.info("start application")
     loop = asyncio.get_event_loop()
     loop.create_task(main())
 
-    print("Press CTRL+C to exit")
+    logger.info("Press CTRL+C to exit")
     loop.run_forever()
