@@ -15,7 +15,7 @@ services:
     environment:
       - POSTGRES_SERVER=postgres
       - POSTGRES_PASSWORD=AQqL6GWCj6MCMpvB
-      - RABBITMQ_URL=amqp://guest:guest@rabbit//
+      - RABBITMQ_URL=amqp://guest:guest@rabbit/
     ports:
       - "8000:8000"
 
@@ -36,7 +36,7 @@ services:
     environment:
       - POSTGRES_SERVER=postgres
       - POSTGRES_PASSWORD=AQqL6GWCj6MCMpvB
-      - RABBITMQ_URL=amqp://guest:guest@rabbit:5672//
+      - RABBITMQ_URL=amqp://guest:guest@rabbit:5672/
       - WALLET_SERVICE_BASE=http://wallet:8000/
 
   postgres:
